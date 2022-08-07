@@ -1,147 +1,167 @@
 package com.a.introduction.gildedrose;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
-public class GildedRoseRefactoredTest {
-	
-	private static final int POSITIVE_SELLIN_LESS_THAN_5 = 2;
-	private static final int SELLIN_BETWEEN_5_AND_10 = 7;
-	private static final String BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert";
-	private static final int SELLIN_GREATER_THAN_10 = 15;
-	private static final int MAXIMUM_QUALITY = 50;
-	private static final String AGED_BRIE = "Aged Brie";
-	private static final int EXPIRED_SELLIN = -2;
-	private static final String DEFAULT_ITEM = "DEFAULT_ITEM";
-	private static final int DEFAULT_QUALITY = 4;
-	private static final int NOT_EXPIRED_SELLIN = 16;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-	@Test
-	public void unexpiredDefaultItem_qualityDecreasesBy1() {
-		
-		GildedRose app = createGildedRoseWithOneItem(DEFAULT_ITEM, 
-						NOT_EXPIRED_SELLIN, DEFAULT_QUALITY);
-		
-		app.updateQuality();
-		
-		Item expected = new Item(DEFAULT_ITEM, 
-						NOT_EXPIRED_SELLIN - 1,DEFAULT_QUALITY - 1);
-			
-		assertItem(expected, app.items[0]);
-	}
-	
-	@Test
-	public void expiredDefaultItem_qualityDecreasesBy2() {
-		
-		GildedRose app = createGildedRoseWithOneItem(DEFAULT_ITEM, 
-						EXPIRED_SELLIN , DEFAULT_QUALITY);
-		
-		app.updateQuality();
-		
-		Item expected = new Item(DEFAULT_ITEM, 
-				EXPIRED_SELLIN - 1, DEFAULT_QUALITY - 2);
-			
-		assertItem(expected, app.items[0]);
-	}
+class GildedRoseRefactoredTest {
 
-	@Test
-	public void unexpiredAgedBrie_qualityIncreasesBy1() {
-		
-		GildedRose app = createGildedRoseWithOneItem(AGED_BRIE, 
-						NOT_EXPIRED_SELLIN , DEFAULT_QUALITY);
-		
-		app.updateQuality();
-		
-		Item expected = new Item(AGED_BRIE, 
-				NOT_EXPIRED_SELLIN - 1, DEFAULT_QUALITY + 1 );
-			
-		assertItem(expected, app.items[0]);
-	}
+    private static final int MAX_QUALITY = 50;
+    private static final String DEFAULT_ITEM = "DEFAULT_ITEM";
+    private static final String AGED_BRIE = "Aged Brie";
+    private static final String BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert";
+    private static final int DEFAULT_INITIAL_QUALITY = 3;
+    private static final int DEFAULT_UNEXPIRED_SELL_IN = 15;
+    private static final int DEFAULT_EXPIRED_SELL_IN = -1;
+    private static final int UNEXPIRED_SELL_IN_BETWEEN_5_AND_10 = 7;
+    private static final int UNEXPIRED_SELL_IN_LESS_THAN_5 = 4;
 
-	@Test
-	public void expiredAgedBrie_qualityIncreasesBy2() {
-		
-		GildedRose app = 
-				createGildedRoseWithOneItem(AGED_BRIE, 
-						EXPIRED_SELLIN , DEFAULT_QUALITY);
-		
-		app.updateQuality();
-		
-		Item expected = new Item(AGED_BRIE, 
-			EXPIRED_SELLIN - 1, DEFAULT_QUALITY + 2 );
-			
-		assertItem(expected, app.items[0]);
-	}
+    @Test
+    void unexpiredDefaultItem_qualityDecreasesBy1() {
 
-	@Test
-	public void unexpiredAgedBrie_qualityDoesNotGoBeyondMaximum() {
-		
-		GildedRose app = createGildedRoseWithOneItem(AGED_BRIE, 
-						NOT_EXPIRED_SELLIN , MAXIMUM_QUALITY);
-		
-		app.updateQuality();
-		
-		Item expected = new Item(AGED_BRIE, 
-				NOT_EXPIRED_SELLIN - 1, MAXIMUM_QUALITY );
-			
-		assertItem(expected, app.items[0]);
-	}
+        GildedRose app = initGildedRoseWithOneItem(
+                DEFAULT_ITEM,
+                DEFAULT_UNEXPIRED_SELL_IN,
+                DEFAULT_INITIAL_QUALITY);
 
-	
-	@Test
-	public void backStagePassesBeyond10Days_qualityIncreasesBy1() {
-		
-		GildedRose app = createGildedRoseWithOneItem(BACKSTAGE_PASSES, 
-						SELLIN_GREATER_THAN_10 , DEFAULT_QUALITY );
-		
-		app.updateQuality();
-		
-		Item expected = new Item(BACKSTAGE_PASSES, 
-				SELLIN_GREATER_THAN_10 - 1, DEFAULT_QUALITY + 1 );
-			
-		assertItem(expected, app.items[0]);
-	}
-	
-	@Test
-	public void backStageBetween5And10Days_qualityIncreasesBy2() {
-		
-		GildedRose app = createGildedRoseWithOneItem(BACKSTAGE_PASSES, 
-						SELLIN_BETWEEN_5_AND_10 , DEFAULT_QUALITY );
-		
-		app.updateQuality();
-		
-		Item expected = new Item(BACKSTAGE_PASSES, 
-				SELLIN_BETWEEN_5_AND_10 - 1, DEFAULT_QUALITY +  2);
-			
-		assertItem(expected, app.items[0]);
-	}
+        app.updateQuality();
 
-	@Test
-	public void backStageLessThan5Days_qualityIncreasesBy3() {
-		
-		GildedRose app = createGildedRoseWithOneItem(BACKSTAGE_PASSES, 
-						POSITIVE_SELLIN_LESS_THAN_5 , DEFAULT_QUALITY );
-		
-		app.updateQuality();
-		
-		Item expected = new Item(BACKSTAGE_PASSES, 
-				POSITIVE_SELLIN_LESS_THAN_5 - 1, DEFAULT_QUALITY +  3);
-			
-		assertItem(expected, app.items[0]);
-	}
+        Item expected = new Item(
+                DEFAULT_ITEM,
+                DEFAULT_UNEXPIRED_SELL_IN - 1,
+                DEFAULT_INITIAL_QUALITY - 1);
+        assertItem(expected, app.items[0]);
+    }
 
-	private void assertItem(Item expected, Item actual) {
-		assertEquals(expected.name, actual.name);
-		assertEquals(expected.sellIn, actual.sellIn);
-		assertEquals(expected.quality, actual.quality);
-	}
+    @Test
+    void expiredDefaultItem_qualityDecreasesBy2() {
 
-	private GildedRose createGildedRoseWithOneItem(String itemType, int sellin, int quality) {
-		Item item = new Item(itemType, sellin, quality);
-		Item[] items = new Item[] { item };
-		GildedRose app = new GildedRose(items);
-		return app;
-	}
+        GildedRose app = initGildedRoseWithOneItem(
+                DEFAULT_ITEM,
+                DEFAULT_EXPIRED_SELL_IN,
+                DEFAULT_INITIAL_QUALITY);
+
+        app.updateQuality();
+
+        Item expected = new Item(
+                DEFAULT_ITEM,
+                DEFAULT_EXPIRED_SELL_IN - 1,
+                DEFAULT_INITIAL_QUALITY - 2);
+        assertItem(expected, app.items[0]);
+    }
+
+    @Test
+    void unexpiredAgedBrie_qualityIncreasesBy1() {
+
+        GildedRose app = initGildedRoseWithOneItem(
+                AGED_BRIE,
+                DEFAULT_UNEXPIRED_SELL_IN,
+                DEFAULT_INITIAL_QUALITY);
+
+        app.updateQuality();
+
+        Item expected = new Item(
+                AGED_BRIE,
+                DEFAULT_UNEXPIRED_SELL_IN - 1,
+                DEFAULT_INITIAL_QUALITY + 1);
+        assertItem(expected, app.items[0]);
+    }
+
+    @Test
+    void expiredAgedBrie_qualityIncreasesBy2() {
+
+        GildedRose app = initGildedRoseWithOneItem(
+                AGED_BRIE,
+                DEFAULT_EXPIRED_SELL_IN,
+                DEFAULT_INITIAL_QUALITY);
+
+        app.updateQuality();
+
+        Item expected = new Item(
+                AGED_BRIE,
+                DEFAULT_EXPIRED_SELL_IN - 1,
+                DEFAULT_INITIAL_QUALITY + 2);
+        assertItem(expected, app.items[0]);
+    }
+
+    @Test
+    void unexpiredAgedBrie_qualityFixAtMaxValue() {
+
+        GildedRose app = initGildedRoseWithOneItem(
+                AGED_BRIE,
+                DEFAULT_UNEXPIRED_SELL_IN,
+                MAX_QUALITY);
+
+        app.updateQuality();
+
+        Item expected = new Item(
+                AGED_BRIE,
+                DEFAULT_UNEXPIRED_SELL_IN - 1,
+                MAX_QUALITY);
+        assertItem(expected, app.items[0]);
+    }
+
+    @Test
+    void unexpiredBackstagePasses_moreThan10Days_qualityIncreasesBy1() {
+
+        GildedRose app = initGildedRoseWithOneItem(
+                BACKSTAGE_PASSES,
+                DEFAULT_UNEXPIRED_SELL_IN,
+                DEFAULT_INITIAL_QUALITY);
+
+        app.updateQuality();
+
+        Item expected = new Item(
+                BACKSTAGE_PASSES,
+                DEFAULT_UNEXPIRED_SELL_IN - 1,
+                DEFAULT_INITIAL_QUALITY + 1);
+        assertItem(expected, app.items[0]);
+    }
+
+    @Test
+    void unexpiredBackstagePasses_between5and10Days_qualityIncreasesBy2() {
+
+        GildedRose app = initGildedRoseWithOneItem(
+                BACKSTAGE_PASSES,
+                UNEXPIRED_SELL_IN_BETWEEN_5_AND_10,
+                DEFAULT_INITIAL_QUALITY);
+
+        app.updateQuality();
+
+        Item expected = new Item(
+                BACKSTAGE_PASSES,
+                UNEXPIRED_SELL_IN_BETWEEN_5_AND_10 - 1,
+                DEFAULT_INITIAL_QUALITY + 2);
+        assertItem(expected, app.items[0]);
+    }
+
+    @Test
+    void unexpiredBackstagePasses_lessThan5Days_qualityIncreasesBy3() {
+
+        GildedRose app = initGildedRoseWithOneItem(
+                BACKSTAGE_PASSES,
+                UNEXPIRED_SELL_IN_LESS_THAN_5,
+                DEFAULT_INITIAL_QUALITY);
+
+        app.updateQuality();
+
+        Item expected = new Item(
+                BACKSTAGE_PASSES,
+                UNEXPIRED_SELL_IN_LESS_THAN_5 - 1,
+                DEFAULT_INITIAL_QUALITY + 3);
+        assertItem(expected, app.items[0]);
+    }
+
+    private GildedRose initGildedRoseWithOneItem(String itemType, int sellIn, int quality) {
+        Item item = new Item(itemType, sellIn, quality);
+        Item[] items = new Item[]{item};
+        return new GildedRose(items);
+    }
+
+    private void assertItem(Item expectedItem, Item firstItem) {
+        assertEquals(expectedItem.name, firstItem.name);
+        assertEquals(expectedItem.sellIn, firstItem.sellIn);
+        assertEquals(expectedItem.quality, firstItem.quality);
+    }
 
 }
