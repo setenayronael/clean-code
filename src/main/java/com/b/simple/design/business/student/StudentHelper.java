@@ -4,15 +4,21 @@ public class StudentHelper {
 
     private static final int P1_GRADE_B_LOWER_LIMIT = 51;
     private static final int P1_GRADE_B_UPPER_LIMIT = 80;
-    private static final int P1_GRADE_B_UPPER_LIMIT_EXTRA_FOR_MATH = 10;
-    private static final int P2_GRADE_EXTRA_LIMIT_FOR_MATH = 5;
+    private static final int P1_EXTRA_LIMIT_FOR_MATH = 10;
+    private static final int P2_EXTRA_LIMIT_FOR_MATH = 5;
+    public static final String NOT_QUALIFY = "NO";
+    public static final String QUALIFY = "YES";
+    public static final String UNKNOWN_QUALIFY = "MAYBE";
+    private static final int P3_EXTRA_LIMIT_FOR_MATH = 5;
+    public static final int P3_FAIL_LIMIT = 20;
+    public static final int P3_SUCCESS_LIMIT = 80;
 
     /* PROBLEM 1 */
     /*
      * You get a grade B if marks are between 51 and 80 (both inclusive). Except for Maths where the upper limit is increased by 10.
      */
     public boolean isGradeB(int marks, boolean isMaths) {
-        int extraLimit = isMaths ? P1_GRADE_B_UPPER_LIMIT_EXTRA_FOR_MATH : 0;
+        int extraLimit = isMaths ? P1_EXTRA_LIMIT_FOR_MATH : 0;
         int gradeBUpperLimit = P1_GRADE_B_UPPER_LIMIT + extraLimit;
         return marks >= P1_GRADE_B_LOWER_LIMIT && marks <= gradeBUpperLimit;
     }
@@ -26,7 +32,7 @@ public class StudentHelper {
 
     public Grade getGrade(int mark, boolean isMaths) {
 
-        int extraLimit = isMaths ? P2_GRADE_EXTRA_LIMIT_FOR_MATH : 0;
+        int extraLimit = isMaths ? P2_EXTRA_LIMIT_FOR_MATH : 0;
 
         int lowerLimitForAGrade = Grade.A.getLowerLimit() + extraLimit;
         if (mark >= lowerLimitForAGrade)
@@ -55,10 +61,22 @@ public class StudentHelper {
      * marks2 - your friends marks
      */
     public String willQualifyForQuiz(int marks1, int marks2, boolean isMaths) {
-        if ((isMaths ? marks1 <= 25 : marks1 <= 20)
-                || (isMaths ? marks2 <= 25 : marks2 <= 20)) return "NO";
-        if ((isMaths ? marks1 >= 85 : marks1 >= 80)
-                || (isMaths ? marks2 >= 85 : marks2 >= 80)) return "YES";
-        return "MAYBE";
+        int extraLimit = isMaths ? P3_EXTRA_LIMIT_FOR_MATH : 0;
+
+        if (isNotGood(marks1, marks2, extraLimit)) return NOT_QUALIFY;
+
+        if (isGood(marks1, marks2, extraLimit)) return QUALIFY;
+
+        return UNKNOWN_QUALIFY;
+    }
+
+    private boolean isNotGood(int marks1, int marks2, int extraLimit) {
+        int failLimit = P3_FAIL_LIMIT + extraLimit;
+        return marks1 <= failLimit || marks2 <= failLimit;
+    }
+
+    private boolean isGood(int marks1, int marks2, int extraLimit) {
+        int successLimit = P3_SUCCESS_LIMIT + extraLimit;
+        return marks1 >= successLimit || marks2 >= successLimit;
     }
 }
